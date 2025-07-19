@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Mưa Ký Tự + Gõ Thư</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: black;
+      color: #00ff00;
+      font-family: monospace;
+    }
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+    #centerText {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 35px;
+      color: #f1f0f5;
+      white-space: pre-line;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="matrixCanvas"></canvas>
+  <div id="centerText"></div>
+
+  <script>
+    const canvas = document.getElementById("matrixCanvas");
+    const ctx = canvas.getContext("2d");
+
+    let W = window.innerWidth;
+    let H = window.innerHeight;
+    canvas.width = W;
+    canvas.height = H;
+
+    window.addEventListener("resize", () => {
+      W = canvas.width = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+    });
+
+    const characters = "HAPPYBIRTHDAYCHUCMUNGSINHNHATTUOIMOIZUIZE";
+    const fontSize = 20;
+    const columns = Math.floor(W / fontSize);
+    const drops = Array(columns).fill(0);
+
+    function drawMatrixRain() {
+      ctx.fillStyle = "rgba(0, 0, 0, 0.15)";
+      ctx.fillRect(0, 0, W, H);
+      ctx.fillStyle = "#0F0";
+      ctx.font = fontSize + "px monospace";
+
+      for (let i = 0; i < drops.length; i++) {
+        const text = characters[Math.floor(Math.random() * characters.length)];
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+        if (drops[i] * fontSize > H || Math.random() > 0.975) {
+          drops[i] = 0;
+        }
+
+        // Chậm hơn 50%
+        drops[i] ++;
+      }
+    }
+
+    setInterval(drawMatrixRain, 33); // khoảng 30fps
+
+    // ================================
+    // Hiệu ứng chữ xuất hiện kiểu thư
+    // ================================
+    const centerTextDiv = document.getElementById("centerText");
+    const fullTextLines = [
+      "Ê con lợn An",
+  "thời gian làm việc cùng mày tuy không dài nhưng lại rất vui,",
+  "sắp tới mày đứng chuyền khác rồi tao cũng chẳng biết phải nói gì,",
+  "đứng chuyền khác mày đừng có quên bọn tao và toàn bộ mọi người trong line 36 đấy nhé,",
+  "nào có kèo bọn tao gọi thì phải đi nha",
+  "chúc mày sang chuyền mới công việc thuận lợi",
+  "tạm biệt và cảm ơn mày!!! con lợn"
+    ];
+
+    let currentLine = 0;
+    let currentChar = 0;
+    let displayedLines = [];
+
+    function typeNextChar() {
+      if (currentLine >= fullTextLines.length) return;
+
+      const currentText = fullTextLines[currentLine];
+
+      if (!displayedLines[currentLine]) displayedLines[currentLine] = "";
+
+      displayedLines[currentLine] += currentText[currentChar] || "";
+
+      centerTextDiv.innerText = displayedLines.join("\n");
+
+      currentChar++;
+
+      if (currentChar >= currentText.length) {
+        currentLine++;
+        currentChar = 0;
+        setTimeout(typeNextChar, 1000); // delay giữa các dòng
+      } else {
+        setTimeout(typeNextChar, 50); // delay giữa các ký tự
+      }
+    }
+
+    typeNextChar();
+  </script>
+</body>
+</html>
